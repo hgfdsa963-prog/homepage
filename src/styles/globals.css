@@ -50,6 +50,7 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -59,6 +60,25 @@ body {
     sans-serif;
   min-height: 100vh;
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* 모바일 터치 최적화 */
+button,
+a,
+input,
+select,
+textarea {
+  touch-action: manipulation;
+}
+
+/* 입력 필드 모바일 최적화 */
+input,
+select,
+textarea {
+  font-size: 16px; /* iOS 줌 방지 */
 }
 
 /* Focus styles */

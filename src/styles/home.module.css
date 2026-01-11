@@ -439,21 +439,179 @@
     padding: 40px 16px;
   }
 
+  .heroEmoji {
+    font-size: 48px;
+  }
+
   .title {
     font-size: 28px;
   }
 
+  .brandTagline {
+    font-size: 10px;
+    letter-spacing: 3px;
+  }
+
   .subtitle {
-    font-size: 16px;
+    font-size: 15px;
+  }
+
+  .introText {
+    font-size: 14px;
   }
 
   .processCard,
-  .faqSection {
-    padding: 24px;
+  .faqSection,
+  .featuresSection,
+  .locationSection {
+    padding: 24px 20px;
+  }
+
+  .processTitle,
+  .faqTitle,
+  .featuresTitle,
+  .locationTitle {
+    font-size: 18px;
+  }
+
+  .processItem {
+    padding: 14px 16px;
+  }
+
+  .stepNumber {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+  }
+
+  .stepText {
+    font-size: 15px;
+  }
+
+  .stepDesc {
+    font-size: 12px;
+  }
+
+  .ctaSection {
+    flex-direction: column;
   }
 
   .ctaButton {
     width: 100%;
     justify-content: center;
+    padding: 14px 24px;
+    font-size: 16px;
+  }
+
+  .statsPreview {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .statCard {
+    padding: 16px 12px;
+  }
+
+  .statEmoji {
+    font-size: 22px;
+  }
+
+  .statValue {
+    font-size: 20px;
+  }
+
+  .statLabel {
+    font-size: 11px;
+  }
+
+  .featureGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .featureItem {
+    padding: 14px;
+  }
+
+  .featureIcon {
+    font-size: 20px;
+  }
+
+  .featureText {
+    font-size: 14px;
+  }
+
+  .locationName {
+    font-size: 16px;
+  }
+
+  .locationAddress {
+    font-size: 14px;
+  }
+
+  .locationMeta {
+    font-size: 13px;
+  }
+
+  .locationMap {
+    height: 220px;
+  }
+
+  .locationButton {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+
+  .faqQuestion {
+    font-size: 14px;
+  }
+
+  .faqAnswer {
+    font-size: 14px;
+  }
+
+  .footer {
+    padding: 32px 0;
+  }
+
+  .footerLogo {
+    font-size: 16px;
+  }
+
+  .footerText {
+    font-size: 12px;
+  }
+}
+
+/* 아주 작은 화면 */
+@media (max-width: 380px) {
+  .container {
+    padding: 32px 12px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .statsPreview {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+
+  .statCard {
+    padding: 12px 8px;
+  }
+
+  .statEmoji {
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+
+  .statValue {
+    font-size: 18px;
+  }
+
+  .statLabel {
+    font-size: 10px;
   }
 }

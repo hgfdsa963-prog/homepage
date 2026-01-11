@@ -753,8 +753,37 @@
     border-left-color: var(--primary);
   }
 
+  .subTabs {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .subTab {
+    flex: 1;
+    min-width: 120px;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .settingsSection {
+    padding: 20px 16px;
+  }
+
+  .settingsTitle {
+    font-size: 18px;
+  }
+
+  .settingsDesc {
+    font-size: 13px;
+  }
+
   .settingsForm {
     flex-direction: column;
+  }
+
+  .settingsInput,
+  .settingsSelect {
+    width: 100%;
   }
 
   .settingsInputGroup {
@@ -762,6 +791,10 @@
   }
 
   .settingsNumberInput {
+    width: 100%;
+  }
+
+  .settingsSaveButton {
     width: 100%;
   }
 }

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/styles/globals.css";
 
@@ -13,8 +13,22 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "블라인드 소개팅 💕",
-  description: "최소한의 정보로 최대한 정성껏 매칭해보는 실험적 소개팅 서비스",
+  title: "정담 서울 | JEONGDAM SEOUL",
+  description:
+    "잔을 기울이며 나누는 진솔한 대화, 대구에서 만나는 특별한 인연. 정담 서울 소개팅",
+  keywords: ["정담서울", "소개팅", "대구소개팅", "미팅", "만남"],
+  openGraph: {
+    title: "정담 서울 | JEONGDAM SEOUL",
+    description: "잔을 기울이며 나누는 진솔한 대화, 특별한 인연",
+    type: "website",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 const RootLayout = ({
