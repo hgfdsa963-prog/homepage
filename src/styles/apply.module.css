@@ -26,22 +26,32 @@
 
 .titleArea {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
 }
 
 .titleEmoji {
-  font-size: 32px;
+  font-size: 28px;
+  margin-bottom: 4px;
 }
 
 .title {
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 800;
   margin: 0;
   background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.titleSub {
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+  margin: 0;
+  font-weight: 500;
 }
 
 .backLink {

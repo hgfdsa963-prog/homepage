@@ -49,13 +49,34 @@
   background-clip: text;
 }
 
+.brandTagline {
+  font-size: 12px;
+  letter-spacing: 4px;
+  color: var(--text-muted);
+  margin: 0 0 20px 0;
+  font-weight: 500;
+}
+
 .subtitle {
   font-size: 18px;
   color: var(--text-secondary);
-  line-height: 1.7;
-  margin: 0;
-  max-width: 500px;
+  line-height: 1.8;
   margin: 0 auto;
+  max-width: 500px;
+}
+
+/* Intro Section */
+.introSection {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 0 20px;
+}
+
+.introText {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.9;
+  font-style: italic;
 }
 
 /* Process Card */
@@ -115,10 +136,21 @@
   flex-shrink: 0;
 }
 
+.stepContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .stepText {
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-primary);
+}
+
+.stepDesc {
+  font-size: 13px;
+  color: var(--text-muted);
 }
 
 /* CTA Buttons */
@@ -207,6 +239,141 @@
   color: var(--text-muted);
 }
 
+/* Features Section */
+.featuresSection {
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 32px;
+  animation: slideUp 0.6s ease 0.35s both;
+}
+
+.featuresTitle {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 24px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
+
+.featureGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--background-alt);
+  border-radius: var(--radius-lg);
+  transition: var(--transition-normal);
+}
+
+.featureItem:hover {
+  background: var(--border-light);
+}
+
+.featureIcon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.featureText {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* Location Section */
+.locationSection {
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 32px;
+  animation: slideUp 0.6s ease 0.38s both;
+}
+
+.locationTitle {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 24px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
+
+.locationCard {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.locationInfo {
+  text-align: center;
+}
+
+.locationName {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 8px;
+}
+
+.locationAddress {
+  font-size: 15px;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+
+.locationMeta {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.locationMapWrapper {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.locationMap {
+  width: 100%;
+  height: 280px;
+  border: none;
+  display: block;
+}
+
+.locationButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 24px;
+  background: var(--gradient-primary);
+  color: white;
+  text-decoration: none;
+  border-radius: var(--radius-lg);
+  font-size: 15px;
+  font-weight: 600;
+  transition: var(--transition-normal);
+  box-shadow: var(--shadow-sm);
+}
+
+.locationButton:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
 /* FAQ Section */
 .faqSection {
   background: var(--surface);
@@ -249,10 +416,21 @@
 /* Footer */
 .footer {
   text-align: center;
-  padding: 40px 0;
-  color: var(--text-muted);
-  font-size: 14px;
+  padding: 48px 0;
   animation: fadeIn 0.6s ease 0.5s both;
+}
+
+.footerLogo {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 12px;
+}
+
+.footerText {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.7;
 }
 
 /* Responsive */

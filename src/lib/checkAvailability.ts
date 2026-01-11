@@ -6,6 +6,12 @@ const getDefaultMax = (): number => {
   return envValue ? parseInt(envValue, 10) : 4;
 };
 
+/** 날짜 문자열에서 요일 인덱스 반환 (0=일, 1=월, ... 6=토) */
+const getWeekdayFromDate = (dateStr: string): number => {
+  const date = new Date(dateStr);
+  return date.getDay();
+};
+
 type AvailabilityResult = {
   isAvailable: boolean;
   isMaleClosed: boolean;
@@ -18,6 +24,48 @@ type AvailabilityResult = {
 };
 
 /**
+ * 날짜별/요일별 최대 인원 조회
+ * 우선순위: 특정 날짜 설정 > 요일 설정 > 기본값
+ */
+const getMaxCapacity = async (
+  date: string
+): Promise<{ maxMale: number; maxFemale: number }> => {
+  const defaultMax = getDefaultMax();
+
+  // 1. 특정 날짜 설정 확인
+  const { data: dateSettings } = await supabaseAdmin
+    .from("date_settings")
+    .select("max_male, max_female")
+    .eq("date", date)
+    .single();
+
+  if (dateSettings) {
+    return {
+      maxMale: dateSettings.max_male ?? defaultMax,
+      maxFemale: dateSettings.max_female ?? defaultMax,
+    };
+  }
+
+  // 2. 요일 설정 확인
+  const weekday = getWeekdayFromDate(date);
+  const { data: weekdaySettings } = await supabaseAdmin
+    .from("weekday_settings")
+    .select("max_male, max_female")
+    .eq("weekday", weekday)
+    .single();
+
+  if (weekdaySettings) {
+    return {
+      maxMale: weekdaySettings.max_male ?? defaultMax,
+      maxFemale: weekdaySettings.max_female ?? defaultMax,
+    };
+  }
+
+  // 3. 기본값
+  return { maxMale: defaultMax, maxFemale: defaultMax };
+};
+
+/**
  * 서버단에서 날짜/성별 마감 여부 확인
  */
 export const checkDateAvailability = async ({
@@ -27,17 +75,8 @@ export const checkDateAvailability = async ({
   date: string;
   gender: "남" | "여" | "기타";
 }): Promise<AvailabilityResult> => {
-  const defaultMax = getDefaultMax();
-
-  // 1. 해당 날짜의 최대 인원 설정 조회
-  const { data: settingsData } = await supabaseAdmin
-    .from("date_settings")
-    .select("max_male, max_female")
-    .eq("date", date)
-    .single();
-
-  const maxMale = settingsData?.max_male ?? defaultMax;
-  const maxFemale = settingsData?.max_female ?? defaultMax;
+  // 1. 해당 날짜의 최대 인원 설정 조회 (날짜 > 요일 > 기본값)
+  const { maxMale, maxFemale } = await getMaxCapacity(date);
 
   // 2. 해당 날짜의 확정된 인원 수 조회
   const { data: applications } = await supabaseAdmin
@@ -94,17 +133,8 @@ export const getDateStatus = async (
   isMaleClosed: boolean;
   isFemaleClosed: boolean;
 }> => {
-  const defaultMax = getDefaultMax();
-
-  // 최대 인원 설정 조회
-  const { data: settingsData } = await supabaseAdmin
-    .from("date_settings")
-    .select("max_male, max_female")
-    .eq("date", date)
-    .single();
-
-  const maxMale = settingsData?.max_male ?? defaultMax;
-  const maxFemale = settingsData?.max_female ?? defaultMax;
+  // 최대 인원 설정 조회 (날짜 > 요일 > 기본값)
+  const { maxMale, maxFemale } = await getMaxCapacity(date);
 
   // 확정된 인원 수 조회
   const { data: applications } = await supabaseAdmin

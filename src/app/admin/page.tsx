@@ -22,12 +22,21 @@ type Application = {
 
 type StatusType = "all" | "pending" | "confirmed" | "matched" | "rejected";
 type TabType = "applications" | "settings";
+type SettingsSubTab = "date" | "weekday";
 
 type DateSetting = {
   date: string;
   max_male: number;
   max_female: number;
 };
+
+type WeekdaySetting = {
+  weekday: number;
+  max_male: number;
+  max_female: number;
+};
+
+const WEEKDAY_NAMES = ["일", "월", "화", "수", "목", "금", "토"];
 
 const STATUS_LABELS: Record<string, string> = {
   pending: "대기중",
@@ -58,6 +67,9 @@ const AdminPage = (): React.ReactElement => {
 
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
 
+  // 설정 서브탭
+  const [settingsSubTab, setSettingsSubTab] = useState<SettingsSubTab>("date");
+
   // 날짜 설정 관련 상태
   const [dateSettings, setDateSettings] = useState<DateSetting[]>([]);
   const [newSettingDate, setNewSettingDate] = useState("");
@@ -67,6 +79,14 @@ const AdminPage = (): React.ReactElement => {
   const [newSettingMaxFemale, setNewSettingMaxFemale] =
     useState(FALLBACK_DEFAULT_MAX);
   const [isSettingsLoading, setIsSettingsLoading] = useState(false);
+
+  // 요일 설정 관련 상태
+  const [weekdaySettings, setWeekdaySettings] = useState<WeekdaySetting[]>([]);
+  const [newWeekday, setNewWeekday] = useState(1);
+  const [newWeekdayMaxMale, setNewWeekdayMaxMale] =
+    useState(FALLBACK_DEFAULT_MAX);
+  const [newWeekdayMaxFemale, setNewWeekdayMaxFemale] =
+    useState(FALLBACK_DEFAULT_MAX);
 
   const fetchApplications = useCallback(async (): Promise<void> => {
     if (!token) return;
@@ -206,12 +226,111 @@ const AdminPage = (): React.ReactElement => {
     [token, defaultMax]
   );
 
+  // 요일 설정 조회
+  const fetchWeekdaySettings = useCallback(async (): Promise<void> => {
+    if (!token) return;
+
+    try {
+      const res = await fetch("/api/admin/settings?type=weekday", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const json = await res.json();
+      if (json.ok) {
+        setWeekdaySettings(json.data ?? []);
+        if (json.defaultMaxPerGender) {
+          setDefaultMax(json.defaultMaxPerGender);
+          setNewWeekdayMaxMale(json.defaultMaxPerGender);
+          setNewWeekdayMaxFemale(json.defaultMaxPerGender);
+        }
+      }
+    } catch {
+      console.error("Failed to fetch weekday settings");
+    }
+  }, [token]);
+
+  // 요일 설정 저장
+  const saveWeekdaySettings = useCallback(
+    async ({
+      weekday,
+      maxMale,
+      maxFemale,
+    }: {
+      weekday: number;
+      maxMale: number;
+      maxFemale: number;
+    }): Promise<void> => {
+      try {
+        const res = await fetch("/api/admin/settings", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            type: "weekday",
+            weekday,
+            maxMale,
+            maxFemale,
+          }),
+        });
+
+        if (res.ok) {
+          fetchWeekdaySettings();
+          setNewWeekday(1);
+          setNewWeekdayMaxMale(defaultMax);
+          setNewWeekdayMaxFemale(defaultMax);
+        }
+      } catch {
+        console.error("Failed to save weekday settings");
+      }
+    },
+    [token, fetchWeekdaySettings, defaultMax]
+  );
+
+  // 요일 설정 삭제
+  const deleteWeekdaySettings = useCallback(
+    async (weekday: number): Promise<void> => {
+      if (
+        !confirm(
+          `${WEEKDAY_NAMES[weekday]}요일 설정을 삭제하시겠습니까? (기본값 ${defaultMax}명으로 복원)`
+        )
+      )
+        return;
+
+      try {
+        const res = await fetch(`/api/admin/settings?weekday=${weekday}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (res.ok) {
+          setWeekdaySettings((prev) =>
+            prev.filter((s) => s.weekday !== weekday)
+          );
+        }
+      } catch {
+        console.error("Failed to delete weekday settings");
+      }
+    },
+    [token, defaultMax]
+  );
+
   // 탭 변경 시 데이터 로드
   useEffect(() => {
     if (isLoggedIn && activeTab === "settings") {
-      fetchDateSettings();
+      if (settingsSubTab === "date") {
+        fetchDateSettings();
+      } else {
+        fetchWeekdaySettings();
+      }
     }
-  }, [isLoggedIn, activeTab, fetchDateSettings]);
+  }, [
+    isLoggedIn,
+    activeTab,
+    settingsSubTab,
+    fetchDateSettings,
+    fetchWeekdaySettings,
+  ]);
 
   const updateStatus = useCallback(
     async ({
@@ -292,10 +411,10 @@ const AdminPage = (): React.ReactElement => {
     return (
       <main className={styles.container}>
         <Link href="/" className={styles.homeLink}>
-          🏠 홈으로
+          🍷 정담 서울
         </Link>
         <div className={styles.loginCard}>
-          <h1 className={styles.loginTitle}>🔐 관리자 로그인</h1>
+          <h1 className={styles.loginTitle}>🔐 정담 서울 관리자</h1>
           <p className={styles.loginSubtitle}>관리자 토큰을 입력해주세요</p>
           <input
             type="password"
@@ -320,13 +439,13 @@ const AdminPage = (): React.ReactElement => {
       <header className={styles.header}>
         <div className={styles.titleArea}>
           <div className={styles.titleRow}>
-            <span className={styles.titleEmoji}>👑</span>
-            <h1 className={styles.title}>관리자 대시보드</h1>
+            <span className={styles.titleEmoji}>🍷</span>
+            <h1 className={styles.title}>정담 서울 관리</h1>
           </div>
-          <p className={styles.subtitle}>신청자 현황 관리</p>
+          <p className={styles.subtitle}>JEONGDAM SEOUL ADMIN</p>
         </div>
         <Link href="/" className={styles.homeLink}>
-          🏠 홈으로
+          🍷 정담 서울
         </Link>
       </header>
 
@@ -660,100 +779,228 @@ const AdminPage = (): React.ReactElement => {
       {/* Settings Tab */}
       {activeTab === "settings" && (
         <div className={styles.settingsSection}>
-          <h2 className={styles.settingsTitle}>📅 날짜별 최대 인원 설정</h2>
+          <h2 className={styles.settingsTitle}>⚙️ 최대 인원 설정</h2>
           <p className={styles.settingsDesc}>
-            기본값은 성별별 {defaultMax}명입니다. 특정 날짜의 인원을 조정하려면
-            아래에서 설정하세요.
+            기본값은 성별별 {defaultMax}명입니다. 우선순위: 특정 날짜 {">"} 요일
+            {">"} 기본값
           </p>
 
-          {/* 새 설정 추가 */}
-          <div className={styles.settingsForm}>
-            <input
-              type="date"
-              value={newSettingDate}
-              onChange={(e) => setNewSettingDate(e.target.value)}
-              className={styles.settingsInput}
-              min={new Date().toISOString().split("T")[0]}
-            />
-            <div className={styles.settingsInputGroup}>
-              <label>남성</label>
-              <input
-                type="number"
-                value={newSettingMaxMale}
-                onChange={(e) => setNewSettingMaxMale(Number(e.target.value))}
-                className={styles.settingsNumberInput}
-                min={0}
-                max={99}
-              />
-            </div>
-            <div className={styles.settingsInputGroup}>
-              <label>여성</label>
-              <input
-                type="number"
-                value={newSettingMaxFemale}
-                onChange={(e) => setNewSettingMaxFemale(Number(e.target.value))}
-                className={styles.settingsNumberInput}
-                min={0}
-                max={99}
-              />
-            </div>
+          {/* 서브탭 */}
+          <div className={styles.subTabs}>
             <button
-              onClick={() =>
-                saveSettings({
-                  date: newSettingDate,
-                  maxMale: newSettingMaxMale,
-                  maxFemale: newSettingMaxFemale,
-                })
-              }
-              disabled={!newSettingDate}
-              className={styles.settingsSaveButton}
+              className={`${styles.subTab} ${
+                settingsSubTab === "date" ? styles.subTabActive : ""
+              }`}
+              onClick={() => setSettingsSubTab("date")}
             >
-              저장
+              📅 날짜별 설정
+            </button>
+            <button
+              className={`${styles.subTab} ${
+                settingsSubTab === "weekday" ? styles.subTabActive : ""
+              }`}
+              onClick={() => setSettingsSubTab("weekday")}
+            >
+              🗓️ 요일별 설정
             </button>
           </div>
 
-          {/* 설정 목록 */}
-          <div className={styles.settingsList}>
-            {isSettingsLoading ? (
-              <div className={styles.loading}>불러오는 중...</div>
-            ) : dateSettings.length === 0 ? (
-              <div className={styles.emptyState}>
-                <div className={styles.emptyEmoji}>📝</div>
-                <p className={styles.emptyText}>
-                  설정된 날짜가 없습니다. 모든 날짜는 기본값({defaultMax}명)이
-                  적용됩니다.
-                </p>
+          {/* 날짜별 설정 */}
+          {settingsSubTab === "date" && (
+            <>
+              <div className={styles.settingsForm}>
+                <input
+                  type="date"
+                  value={newSettingDate}
+                  onChange={(e) => setNewSettingDate(e.target.value)}
+                  className={styles.settingsInput}
+                  min={new Date().toISOString().split("T")[0]}
+                />
+                <div className={styles.settingsInputGroup}>
+                  <label>남성</label>
+                  <input
+                    type="number"
+                    value={newSettingMaxMale}
+                    onChange={(e) =>
+                      setNewSettingMaxMale(Number(e.target.value))
+                    }
+                    className={styles.settingsNumberInput}
+                    min={0}
+                    max={99}
+                  />
+                </div>
+                <div className={styles.settingsInputGroup}>
+                  <label>여성</label>
+                  <input
+                    type="number"
+                    value={newSettingMaxFemale}
+                    onChange={(e) =>
+                      setNewSettingMaxFemale(Number(e.target.value))
+                    }
+                    className={styles.settingsNumberInput}
+                    min={0}
+                    max={99}
+                  />
+                </div>
+                <button
+                  onClick={() =>
+                    saveSettings({
+                      date: newSettingDate,
+                      maxMale: newSettingMaxMale,
+                      maxFemale: newSettingMaxFemale,
+                    })
+                  }
+                  disabled={!newSettingDate}
+                  className={styles.settingsSaveButton}
+                >
+                  저장
+                </button>
               </div>
-            ) : (
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th>날짜</th>
-                    <th>남성 최대</th>
-                    <th>여성 최대</th>
-                    <th>액션</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {dateSettings.map((setting) => (
-                    <tr key={setting.date}>
-                      <td>{setting.date}</td>
-                      <td>{setting.max_male}명</td>
-                      <td>{setting.max_female}명</td>
-                      <td>
-                        <button
-                          className={`${styles.actionButton} ${styles.actionDelete}`}
-                          onClick={() => deleteSettings(setting.date)}
-                        >
-                          삭제
-                        </button>
-                      </td>
-                    </tr>
+
+              <div className={styles.settingsList}>
+                {isSettingsLoading ? (
+                  <div className={styles.loading}>불러오는 중...</div>
+                ) : dateSettings.length === 0 ? (
+                  <div className={styles.emptyState}>
+                    <div className={styles.emptyEmoji}>📝</div>
+                    <p className={styles.emptyText}>
+                      설정된 날짜가 없습니다. 요일 설정 또는 기본값({defaultMax}
+                      명)이 적용됩니다.
+                    </p>
+                  </div>
+                ) : (
+                  <table className={styles.table}>
+                    <thead>
+                      <tr>
+                        <th>날짜</th>
+                        <th>남성 최대</th>
+                        <th>여성 최대</th>
+                        <th>액션</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {dateSettings.map((setting) => (
+                        <tr key={setting.date}>
+                          <td>{setting.date}</td>
+                          <td>{setting.max_male}명</td>
+                          <td>{setting.max_female}명</td>
+                          <td>
+                            <button
+                              className={`${styles.actionButton} ${styles.actionDelete}`}
+                              onClick={() => deleteSettings(setting.date)}
+                            >
+                              삭제
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </>
+          )}
+
+          {/* 요일별 설정 */}
+          {settingsSubTab === "weekday" && (
+            <>
+              <div className={styles.settingsForm}>
+                <select
+                  value={newWeekday}
+                  onChange={(e) => setNewWeekday(Number(e.target.value))}
+                  className={styles.settingsSelect}
+                >
+                  {WEEKDAY_NAMES.map((name, idx) => (
+                    <option key={idx} value={idx}>
+                      {name}요일
+                    </option>
                   ))}
-                </tbody>
-              </table>
-            )}
-          </div>
+                </select>
+                <div className={styles.settingsInputGroup}>
+                  <label>남성</label>
+                  <input
+                    type="number"
+                    value={newWeekdayMaxMale}
+                    onChange={(e) =>
+                      setNewWeekdayMaxMale(Number(e.target.value))
+                    }
+                    className={styles.settingsNumberInput}
+                    min={0}
+                    max={99}
+                  />
+                </div>
+                <div className={styles.settingsInputGroup}>
+                  <label>여성</label>
+                  <input
+                    type="number"
+                    value={newWeekdayMaxFemale}
+                    onChange={(e) =>
+                      setNewWeekdayMaxFemale(Number(e.target.value))
+                    }
+                    className={styles.settingsNumberInput}
+                    min={0}
+                    max={99}
+                  />
+                </div>
+                <button
+                  onClick={() =>
+                    saveWeekdaySettings({
+                      weekday: newWeekday,
+                      maxMale: newWeekdayMaxMale,
+                      maxFemale: newWeekdayMaxFemale,
+                    })
+                  }
+                  className={styles.settingsSaveButton}
+                >
+                  저장
+                </button>
+              </div>
+
+              <div className={styles.settingsList}>
+                {isSettingsLoading ? (
+                  <div className={styles.loading}>불러오는 중...</div>
+                ) : weekdaySettings.length === 0 ? (
+                  <div className={styles.emptyState}>
+                    <div className={styles.emptyEmoji}>📝</div>
+                    <p className={styles.emptyText}>
+                      설정된 요일이 없습니다. 모든 요일은 기본값({defaultMax}
+                      명)이 적용됩니다.
+                    </p>
+                  </div>
+                ) : (
+                  <table className={styles.table}>
+                    <thead>
+                      <tr>
+                        <th>요일</th>
+                        <th>남성 최대</th>
+                        <th>여성 최대</th>
+                        <th>액션</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {weekdaySettings.map((setting) => (
+                        <tr key={setting.weekday}>
+                          <td>{WEEKDAY_NAMES[setting.weekday]}요일</td>
+                          <td>{setting.max_male}명</td>
+                          <td>{setting.max_female}명</td>
+                          <td>
+                            <button
+                              className={`${styles.actionButton} ${styles.actionDelete}`}
+                              onClick={() =>
+                                deleteWeekdaySettings(setting.weekday)
+                              }
+                            >
+                              삭제
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </>
+          )}
         </div>
       )}
     </main>

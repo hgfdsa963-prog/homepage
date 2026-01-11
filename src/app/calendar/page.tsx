@@ -94,14 +94,14 @@ const CalendarPage = (): React.ReactElement => {
         <div className={styles.titleArea}>
           <div className={styles.titleRow}>
             <span className={styles.titleEmoji}>📅</span>
-            <h1 className={styles.title}>신청 현황</h1>
+            <h1 className={styles.title}>예약 현황</h1>
           </div>
           <p className={styles.subtitle}>
-            희망 날짜 기준 집계예요. 날짜를 선택 안 하신 분은 캘린더에 안 보여요!
+            희망 날짜별 신청 현황입니다. 날짜 미선택자는 표시되지 않습니다.
           </p>
         </div>
         <Link href="/" className={styles.backLink}>
-          ← 메인으로
+          ← 정담 서울
         </Link>
       </header>
 

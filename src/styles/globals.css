@@ -1,33 +1,34 @@
 @import "tailwindcss";
 
 :root {
-  /* Color Palette - Warm Romantic Theme */
-  --primary: #e85d75;
-  --primary-dark: #c94a5f;
-  --primary-light: #ff8fa3;
-  --secondary: #ff9a8b;
-  --accent: #ffc3a0;
-  --background: #fff9f7;
-  --background-alt: #fff0ed;
+  /* Color Palette - 정담 서울 (Elegant Bar Theme) */
+  --primary: #8b4d57;
+  --primary-dark: #6d3a42;
+  --primary-light: #b8707c;
+  --secondary: #c9a962;
+  --accent: #d4af37;
+  --background: #faf8f5;
+  --background-alt: #f5f1eb;
   --surface: #ffffff;
-  --text-primary: #2d2d2d;
-  --text-secondary: #666666;
-  --text-muted: #999999;
-  --border: #f0e0dc;
-  --border-light: #fae8e4;
-  --success: #4ade80;
-  --error: #f87171;
+  --surface-hover: #faf8f5;
+  --text-primary: #2c2420;
+  --text-secondary: #5a524c;
+  --text-muted: #8a847e;
+  --border: #e8e2d9;
+  --border-light: #f0ebe4;
+  --success: #5d9a6d;
+  --error: #c25a5a;
 
   /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #e85d75 0%, #ff9a8b 100%);
-  --gradient-bg: linear-gradient(180deg, #fff9f7 0%, #fff0ed 50%, #ffe8e3 100%);
-  --gradient-card: linear-gradient(145deg, #ffffff 0%, #fff9f7 100%);
+  --gradient-primary: linear-gradient(135deg, #8b4d57 0%, #c9a962 100%);
+  --gradient-bg: linear-gradient(180deg, #faf8f5 0%, #f5f1eb 50%, #efe9e0 100%);
+  --gradient-card: linear-gradient(145deg, #ffffff 0%, #faf8f5 100%);
 
   /* Shadows */
-  --shadow-sm: 0 2px 8px rgba(232, 93, 117, 0.08);
-  --shadow-md: 0 4px 20px rgba(232, 93, 117, 0.12);
-  --shadow-lg: 0 8px 40px rgba(232, 93, 117, 0.16);
-  --shadow-glow: 0 0 30px rgba(232, 93, 117, 0.2);
+  --shadow-sm: 0 2px 8px rgba(44, 36, 32, 0.06);
+  --shadow-md: 0 4px 20px rgba(44, 36, 32, 0.10);
+  --shadow-lg: 0 8px 40px rgba(44, 36, 32, 0.14);
+  --shadow-glow: 0 0 30px rgba(139, 77, 87, 0.15);
 
   /* Spacing */
   --radius-sm: 8px;

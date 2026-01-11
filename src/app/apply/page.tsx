@@ -172,7 +172,7 @@ const ApplyPage = (): React.ReactElement => {
           return;
         }
         setStatus("done");
-        setMessage("신청 접수 완료! 확인 후 연락드릴게요 💕");
+        setMessage("신청이 접수되었습니다! 매칭 검토 후 연락드릴게요 🥂");
         setForm(INITIAL_FORM);
         setDateAvailability(null);
       } catch {
@@ -213,11 +213,12 @@ const ApplyPage = (): React.ReactElement => {
       {/* Header */}
       <header className={styles.header}>
         <div className={styles.titleArea}>
-          <span className={styles.titleEmoji}>💌</span>
-          <h1 className={styles.title}>소개팅 신청</h1>
+          <span className={styles.titleEmoji}>🥂</span>
+          <h1 className={styles.title}>만남 신청</h1>
+          <p className={styles.titleSub}>JEONGDAM SEOUL</p>
         </div>
         <Link href="/" className={styles.backLink}>
-          ← 소개로
+          ← 정담 서울
         </Link>
       </header>
 
@@ -402,7 +403,7 @@ const ApplyPage = (): React.ReactElement => {
               개인정보 수집 및 이용에 동의합니다. (필수)
               <br />
               <small>
-                수집 정보: 이름, 연락처, 성별, 나이 등 | 목적: 소개팅 매칭
+                수집 정보: 이름, 연락처, 성별, 나이 등 | 목적: 정담 서울 매칭
               </small>
             </span>
           </label>
@@ -415,7 +416,7 @@ const ApplyPage = (): React.ReactElement => {
               isSubmitEnabled ? styles.submitEnabled : styles.submitDisabled
             }`}
           >
-            {status === "loading" ? <>⏳ 접수 중...</> : <>💕 신청하기</>}
+            {status === "loading" ? <>⏳ 접수 중...</> : <>🥂 신청하기</>}
           </button>
 
           {/* Message */}
