@@ -96,9 +96,7 @@ const CalendarPage = (): React.ReactElement => {
             <span className={styles.titleEmoji}>📅</span>
             <h1 className={styles.title}>예약 현황</h1>
           </div>
-          <p className={styles.subtitle}>
-            희망 날짜별 신청 현황입니다. 날짜 미선택자는 표시되지 않습니다.
-          </p>
+          <p className={styles.subtitle}>희망 날짜별 신청 현황</p>
         </div>
         <Link href="/" className={styles.backLink}>
           ← 정담 서울
@@ -176,8 +174,8 @@ const CalendarPage = (): React.ReactElement => {
                   !cell.date
                     ? styles.dayCellEmpty
                     : hasData
-                      ? styles.dayCellHasData
-                      : ""
+                    ? styles.dayCellHasData
+                    : ""
                 }`}
               >
                 <div className={styles.dayNumber}>
@@ -209,17 +207,6 @@ const CalendarPage = (): React.ReactElement => {
         </div>
 
         {/* Legend */}
-        <div className={styles.legend}>
-          <div className={styles.legendItem}>
-            <span className={`${styles.legendDot} ${styles.legendMale}`} />
-            <span>남성</span>
-          </div>
-          <div className={styles.legendItem}>
-            <span className={`${styles.legendDot} ${styles.legendFemale}`} />
-            <span>여성</span>
-          </div>
-        </div>
-
         {/* Loading / No Data */}
         {isLoading && (
           <div className={styles.noDataMessage}>

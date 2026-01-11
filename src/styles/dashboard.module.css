@@ -235,10 +235,9 @@
 }
 
 .dayCell {
-  aspect-ratio: 1;
-  min-height: 100px;
+  min-height: 80px;
   border-radius: var(--radius-md);
-  padding: 10px;
+  padding: 8px;
   background: var(--background-alt);
   transition: var(--transition-normal);
   display: flex;
@@ -367,63 +366,188 @@
 
   .header {
     flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .titleRow {
+    gap: 8px;
+  }
+
+  .titleEmoji {
+    font-size: 28px;
   }
 
   .title {
-    font-size: 24px;
+    font-size: 22px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+  }
+
+  .backLink {
+    font-size: 14px;
+    padding: 8px 14px;
+  }
+
+  .controls {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .monthInput {
+    flex: 1;
+    min-width: 0;
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .navButton {
+    padding: 10px 12px;
+    font-size: 14px;
   }
 
   .calendar {
-    padding: 16px;
+    padding: 12px;
   }
 
-  .dayCell {
-    min-height: 70px;
-    padding: 6px;
+  .calendarHeader {
+    gap: 4px;
+    margin-bottom: 8px;
   }
 
-  .dayNumber {
-    font-size: 12px;
-    margin-bottom: 4px;
+  .dayHeader {
+    font-size: 11px;
+    padding: 6px 2px;
   }
 
-  .dayStats {
-    font-size: 10px;
-  }
-
-  .summaryGrid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .summaryCard {
-    flex-direction: column;
-    text-align: center;
-    padding: 16px;
-  }
-
-  .summaryIcon {
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
-  }
-
-  .summaryValue {
-    font-size: 24px;
-  }
-}
-
-@media (max-width: 480px) {
-  .calendarHeader,
   .calendarGrid {
     gap: 4px;
   }
 
   .dayCell {
-    min-height: 60px;
+    aspect-ratio: auto;
+    min-height: 56px;
     padding: 4px;
+    border-radius: var(--radius-sm);
+  }
+
+  .dayNumber {
+    font-size: 11px;
+    margin-bottom: 2px;
+  }
+
+  .dayStats {
+    font-size: 9px;
+    gap: 2px;
+  }
+
+  .statRow {
+    gap: 3px;
+  }
+
+  .statTotal {
+    font-size: 9px;
+  }
+
+  .noData {
+    font-size: 10px;
+  }
+
+  .summaryGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .summaryCard {
+    flex-direction: column;
+    text-align: center;
+    padding: 12px 8px;
+    gap: 8px;
+  }
+
+  .summaryIcon {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  .summaryValue {
+    font-size: 20px;
+  }
+
+  .summaryLabel {
+    font-size: 11px;
   }
 
   .legend {
     gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .legendItem {
+    font-size: 11px;
+    gap: 4px;
+  }
+
+  .legendDot {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+@media (max-width: 380px) {
+  .container {
+    padding: 24px 12px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .calendar {
+    padding: 8px;
+  }
+
+  .calendarHeader,
+  .calendarGrid {
+    gap: 2px;
+  }
+
+  .dayHeader {
+    font-size: 10px;
+    padding: 4px 1px;
+  }
+
+  .dayCell {
+    min-height: 48px;
+    padding: 3px;
+  }
+
+  .dayNumber {
+    font-size: 10px;
+  }
+
+  .dayStats {
+    font-size: 8px;
+  }
+
+  .summaryCard {
+    padding: 10px 6px;
+  }
+
+  .summaryIcon {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+
+  .summaryValue {
+    font-size: 18px;
+  }
+
+  .summaryLabel {
+    font-size: 10px;
   }
 }
