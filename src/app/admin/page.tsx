@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
+import Link from "next/link";
 import styles from "@/styles/admin.module.css";
 
 type Application = {
@@ -176,6 +177,9 @@ const AdminPage = (): React.ReactElement => {
   if (!isLoggedIn) {
     return (
       <main className={styles.container}>
+        <Link href="/" className={styles.homeLink}>
+          🏠 홈으로
+        </Link>
         <div className={styles.loginCard}>
           <h1 className={styles.loginTitle}>🔐 관리자 로그인</h1>
           <p className={styles.loginSubtitle}>관리자 토큰을 입력해주세요</p>
@@ -207,6 +211,9 @@ const AdminPage = (): React.ReactElement => {
           </div>
           <p className={styles.subtitle}>신청자 현황 관리</p>
         </div>
+        <Link href="/" className={styles.homeLink}>
+          🏠 홈으로
+        </Link>
       </header>
 
       {/* Controls */}
