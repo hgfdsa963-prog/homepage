@@ -1,0 +1,157 @@
+@import "tailwindcss";
+
+:root {
+  /* Color Palette - Warm Romantic Theme */
+  --primary: #e85d75;
+  --primary-dark: #c94a5f;
+  --primary-light: #ff8fa3;
+  --secondary: #ff9a8b;
+  --accent: #ffc3a0;
+  --background: #fff9f7;
+  --background-alt: #fff0ed;
+  --surface: #ffffff;
+  --text-primary: #2d2d2d;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --border: #f0e0dc;
+  --border-light: #fae8e4;
+  --success: #4ade80;
+  --error: #f87171;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #e85d75 0%, #ff9a8b 100%);
+  --gradient-bg: linear-gradient(180deg, #fff9f7 0%, #fff0ed 50%, #ffe8e3 100%);
+  --gradient-card: linear-gradient(145deg, #ffffff 0%, #fff9f7 100%);
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(232, 93, 117, 0.08);
+  --shadow-md: 0 4px 20px rgba(232, 93, 117, 0.12);
+  --shadow-lg: 0 8px 40px rgba(232, 93, 117, 0.16);
+  --shadow-glow: 0 0 30px rgba(232, 93, 117, 0.2);
+
+  /* Spacing */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  /* Animation */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+  --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Tailwind theme configuration handled via tailwind.config */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--gradient-bg);
+  color: var(--text-primary);
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui,
+    sans-serif;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* Focus styles */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background-alt);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-light);
+}
+
+/* Selection */
+::selection {
+  background: var(--primary-light);
+  color: white;
+}
+
+/* Keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Utility classes */
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.6s ease forwards;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}

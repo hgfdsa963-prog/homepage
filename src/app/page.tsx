@@ -1,285 +1,168 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import styles from "@/styles/home.module.css";
 
-type FormState = {
-  name: string;
-  age: string;
-  gender: "남" | "여" | "기타";
-  phone: string;
-  kakaoId: string;
-  location: string;
-  preferredGender: string;
-  note: string;
-  agreePrivacy: boolean;
-  website: string; // honeypot
+type MonthStats = {
+  male: number;
+  female: number;
+  total: number;
 };
 
-const initial: FormState = {
-  name: "",
-  age: "",
-  gender: "남",
-  phone: "",
-  kakaoId: "",
-  location: "",
-  preferredGender: "",
-  note: "",
-  agreePrivacy: false,
-  website: "",
-};
+const ADMIN_CLICK_COUNT = 5;
+const CLICK_TIMEOUT = 2000;
 
-export default function Page() {
-  const [f, setF] = useState<FormState>(initial);
-  const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">(
-    "idle"
-  );
-  const [msg, setMsg] = useState<string>("");
+const HomePage = (): React.ReactElement => {
+  const router = useRouter();
+  const [stats, setStats] = useState<MonthStats | null>(null);
+  const clickCountRef = useRef(0);
+  const clickTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const canSubmit = useMemo(() => {
-    return (
-      f.name.trim().length > 0 &&
-      f.age.trim().length > 0 &&
-      f.phone.trim().length > 0 &&
-      f.agreePrivacy &&
-      status !== "loading"
-    );
-  }, [f, status]);
+  const handleTitleClick = useCallback((): void => {
+    clickCountRef.current += 1;
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setStatus("loading");
-    setMsg("");
-
-    try {
-      const res = await fetch("/api/apply", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(f),
-      });
-      const json = await res.json();
-
-      if (!res.ok || !json.ok) {
-        setStatus("error");
-        setMsg(json.message ?? "요청 처리에 실패했어요.");
-        return;
-      }
-
-      setStatus("done");
-      setMsg("신청이 접수됐어요! 확인 후 연락드릴게요 🙂");
-      setF(initial);
-    } catch {
-      setStatus("error");
-      setMsg("네트워크 오류가 발생했어요. 잠시 후 다시 시도해주세요.");
+    if (clickTimerRef.current) {
+      clearTimeout(clickTimerRef.current);
     }
-  }
+
+    if (clickCountRef.current >= ADMIN_CLICK_COUNT) {
+      clickCountRef.current = 0;
+      router.push("/admin");
+      return;
+    }
+
+    clickTimerRef.current = setTimeout(() => {
+      clickCountRef.current = 0;
+    }, CLICK_TIMEOUT);
+  }, [router]);
+
+  useEffect(() => {
+    const fetchStats = async (): Promise<void> => {
+      try {
+        const now = new Date();
+        const month = `${now.getFullYear()}-${String(
+          now.getMonth() + 1
+        ).padStart(2, "0")}`;
+        const res = await fetch(`/api/status?month=${month}`);
+        if (res.ok) {
+          const data = await res.json();
+          setStats(data);
+        }
+      } catch {
+        // 통계 로드 실패 시 무시
+      }
+    };
+    fetchStats();
+  }, []);
 
   return (
-    <main style={{ maxWidth: 760, margin: "0 auto", padding: "40px 16px" }}>
-      <header style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 28, marginBottom: 8 }}>블라인드 소개팅 신청</h1>
-        <p style={{ lineHeight: 1.6, opacity: 0.85 }}>
-          가볍게 신청 → 조건 확인 → 매칭 가능하면 연락! (파일럿이라 정성껏
-          하지만… 과한 기대는 금지! 기대는 우리를 배신해요 😇)
+    <main className={styles.container}>
+      {/* Hero Section */}
+      <section className={styles.hero}>
+        <span className={styles.heroEmoji}>💝</span>
+        <h1 className={styles.title} onClick={handleTitleClick}>
+          블라인드 소개팅
+        </h1>
+        <p className={styles.subtitle}>
+          &ldquo;대충 아무나&rdquo;가 아니라,
+          <br />
+          최소한의 정보로 최대한 정성껏 매칭해보는 실험이에요.
         </p>
-      </header>
-
-      <section
-        style={{
-          padding: 16,
-          border: "1px solid #ddd",
-          borderRadius: 12,
-          marginBottom: 20,
-        }}
-      >
-        <h2 style={{ fontSize: 18, marginBottom: 8 }}>진행 방식</h2>
-        <ul style={{ lineHeight: 1.8, margin: 0, paddingLeft: 18 }}>
-          <li>신청 내용을 바탕으로 성향/조건을 간단히 검토해요.</li>
-          <li>
-            매칭 가능성이 있을 때만 연락드려요(무응답이면… 죄송하지만 인연이
-            아니었던 걸로 🥲).
-          </li>
-          <li>개인정보는 파일럿 운영을 위해 최소한으로만 받아요.</li>
-        </ul>
       </section>
 
-      <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }}>
-        {/* honeypot: 사람은 보통 안 채움 */}
-        <input
-          value={f.website}
-          onChange={(e) => setF({ ...f, website: e.target.value })}
-          placeholder="website"
-          autoComplete="off"
-          tabIndex={-1}
-          style={{ position: "absolute", left: -9999, width: 1, height: 1 }}
-        />
+      {/* Process Card */}
+      <section className={styles.processCard}>
+        <h2 className={styles.processTitle}>
+          <span>✨</span> 진행 방식
+        </h2>
+        <ol className={styles.processList}>
+          <li className={styles.processItem}>
+            <span className={styles.stepNumber}>1</span>
+            <span className={styles.stepText}>간단한 신청서 작성</span>
+          </li>
+          <li className={styles.processItem}>
+            <span className={styles.stepNumber}>2</span>
+            <span className={styles.stepText}>조건/성향 간단 검토</span>
+          </li>
+          <li className={styles.processItem}>
+            <span className={styles.stepNumber}>3</span>
+            <span className={styles.stepText}>매칭 가능 시에만 연락</span>
+          </li>
+        </ol>
+      </section>
 
-        <Field label="이름/닉네임 *">
-          <input
-            value={f.name}
-            onChange={(e) => setF({ ...f, name: e.target.value })}
-            style={inputStyle}
-            placeholder="예) 훈 / 김OO"
-          />
-        </Field>
-
-        <div
-          style={{ display: "grid", gap: 12, gridTemplateColumns: "1fr 1fr" }}
+      {/* CTA Buttons */}
+      <div className={styles.ctaSection}>
+        <Link
+          href="/apply"
+          className={`${styles.ctaButton} ${styles.ctaPrimary}`}
         >
-          <Field label="나이 *">
-            <input
-              value={f.age}
-              onChange={(e) => setF({ ...f, age: e.target.value })}
-              style={inputStyle}
-              placeholder="예) 31"
-              inputMode="numeric"
-            />
-          </Field>
+          💌 신청하러 가기
+        </Link>
+        <Link
+          href="/calendar"
+          className={`${styles.ctaButton} ${styles.ctaSecondary}`}
+        >
+          📅 신청 현황 보기
+        </Link>
+      </div>
 
-          <Field label="성별 *">
-            <select
-              value={f.gender}
-              onChange={(e) =>
-                setF({ ...f, gender: e.target.value as FormState["gender"] })
-              }
-              style={inputStyle}
-            >
-              <option value="남">남</option>
-              <option value="여">여</option>
-              <option value="기타">기타</option>
-            </select>
-          </Field>
+      {/* Stats Preview */}
+      {stats && (
+        <div className={styles.statsPreview}>
+          <div className={styles.statCard}>
+            <div className={styles.statEmoji}>👨</div>
+            <div className={styles.statValue}>{stats.male}</div>
+            <div className={styles.statLabel}>이번 달 남성</div>
+          </div>
+          <div className={styles.statCard}>
+            <div className={styles.statEmoji}>👩</div>
+            <div className={styles.statValue}>{stats.female}</div>
+            <div className={styles.statLabel}>이번 달 여성</div>
+          </div>
+          <div className={styles.statCard}>
+            <div className={styles.statEmoji}>💕</div>
+            <div className={styles.statValue}>{stats.total}</div>
+            <div className={styles.statLabel}>총 신청자</div>
+          </div>
         </div>
+      )}
 
-        <Field label="연락처(휴대폰) *">
-          <input
-            value={f.phone}
-            onChange={(e) => setF({ ...f, phone: e.target.value })}
-            style={inputStyle}
-            placeholder="예) 010-1234-5678"
-          />
-        </Field>
-
-        <Field label="카카오톡 ID (선택)">
-          <input
-            value={f.kakaoId}
-            onChange={(e) => setF({ ...f, kakaoId: e.target.value })}
-            style={inputStyle}
-            placeholder="예) hoon123"
-          />
-        </Field>
-
-        <Field label="주 활동 지역 (선택)">
-          <input
-            value={f.location}
-            onChange={(e) => setF({ ...f, location: e.target.value })}
-            style={inputStyle}
-            placeholder="예) 분당/판교/강남"
-          />
-        </Field>
-
-        <Field label="선호 성별/조건 (선택)">
-          <input
-            value={f.preferredGender}
-            onChange={(e) => setF({ ...f, preferredGender: e.target.value })}
-            style={inputStyle}
-            placeholder="예) 상관없음 / 여성 / 남성"
-          />
-        </Field>
-
-        <Field label="한 줄 소개/메모 (선택)">
-          <textarea
-            value={f.note}
-            onChange={(e) => setF({ ...f, note: e.target.value })}
-            style={{ ...inputStyle, minHeight: 90, resize: "vertical" }}
-            placeholder="예) 주말에 드라이브/사진 좋아해요"
-          />
-        </Field>
-
-        <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <input
-            type="checkbox"
-            checked={f.agreePrivacy}
-            onChange={(e) => setF({ ...f, agreePrivacy: e.target.checked })}
-          />
-          <span style={{ lineHeight: 1.4 }}>
-            개인정보 수집/이용에 동의합니다. (필수)
-          </span>
-        </label>
-
-        <button
-          type="submit"
-          disabled={!canSubmit}
-          style={{
-            padding: "12px 14px",
-            borderRadius: 12,
-            border: "1px solid #111",
-            background: canSubmit ? "#111" : "#999",
-            color: "#fff",
-            cursor: canSubmit ? "pointer" : "not-allowed",
-            fontSize: 16,
-          }}
-        >
-          {status === "loading" ? "접수 중..." : "신청하기"}
-        </button>
-
-        {msg && (
-          <p
-            style={{
-              margin: 0,
-              padding: 12,
-              borderRadius: 12,
-              background: "#f5f5f5",
-            }}
-          >
-            {msg}
-          </p>
-        )}
-      </form>
-
-      <footer
-        style={{
-          marginTop: 28,
-          paddingTop: 16,
-          borderTop: "1px solid #eee",
-          opacity: 0.9,
-        }}
-      >
-        <h3 style={{ fontSize: 16, marginBottom: 8 }}>
-          개인정보 수집/이용 안내(파일럿)
+      {/* FAQ Section */}
+      <section className={styles.faqSection}>
+        <h3 className={styles.faqTitle}>
+          <span>💬</span> 자주 묻는 질문
         </h3>
-        <p style={{ lineHeight: 1.7, margin: 0 }}>
-          수집 항목: 이름/닉네임, 나이, 성별, 연락처, (선택)카카오톡ID/지역/메모
-          <br />
-          이용 목적: 소개팅 매칭 및 연락
-          <br />
-          보관 기간: 매칭 완료 또는 신청일로부터 3개월 이내 파기(원하면 즉시
-          삭제 요청 가능)
-          <br />
-          문의/삭제 요청: 운영자에게 별도 안내된 연락처로 요청
-        </p>
+        <div className={styles.faqItem}>
+          <p className={styles.faqQuestion}>Q. 신청하면 무조건 연락 오나요?</p>
+          <p className={styles.faqAnswer}>
+            A. 아니요, 매칭 가능성이 있을 때만 연락드려요. 무응답이면… 마음의
+            박수 한 번만 보내주세요 👏
+          </p>
+        </div>
+        <div className={styles.faqItem}>
+          <p className={styles.faqQuestion}>Q. 개인정보는 어떻게 되나요?</p>
+          <p className={styles.faqAnswer}>
+            A. 매칭 목적으로만 사용하고, 매칭 완료 후 일정 기간 뒤 삭제해요.
+          </p>
+        </div>
+        <div className={styles.faqItem}>
+          <p className={styles.faqQuestion}>Q. 비용이 있나요?</p>
+          <p className={styles.faqAnswer}>
+            A. 파일럿 기간 동안은 무료예요! 잘 되면 정식 오픈, 안 되면… 우리만의
+            흑역사로 봉인 🔒
+          </p>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className={styles.footer}>
+        Made with 💕 for better connections
       </footer>
     </main>
   );
-}
-
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <label style={{ display: "grid", gap: 6 }}>
-      <span style={{ fontSize: 14, opacity: 0.85 }}>{label}</span>
-      {children}
-    </label>
-  );
-}
-
-const inputStyle: React.CSSProperties = {
-  padding: "10px 12px",
-  borderRadius: 12,
-  border: "1px solid #ddd",
-  fontSize: 15,
 };
+
+export default HomePage;
