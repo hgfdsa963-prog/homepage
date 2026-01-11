@@ -111,9 +111,9 @@ const HomePage = (): React.ReactElement => {
           <li className={styles.processItem}>
             <span className={styles.stepNumber}>3</span>
             <div className={styles.stepContent}>
-              <span className={styles.stepText}>정담에서 만남</span>
+              <span className={styles.stepText}>정남에서 만남</span>
               <span className={styles.stepDesc}>
-                분위기 좋은 공간에서 대화를 나눠보세요
+                분위기 좋은 술집에서 대화를 나눠보세요
               </span>
             </div>
           </li>
@@ -185,13 +185,14 @@ const HomePage = (): React.ReactElement => {
       {/* Location Section */}
       <section className={styles.locationSection}>
         <h3 className={styles.locationTitle}>
-          <span>📍</span> 오시는 길
+          <span>📍</span> 만남 장소
         </h3>
         <div className={styles.locationCard}>
           <div className={styles.locationInfo}>
-            <div className={styles.locationName}>정담 서울</div>
+            <div className={styles.locationName}>정남 (正南)</div>
+            <div className={styles.locationDesc}>정담 서울의 파트너 술집</div>
             <div className={styles.locationAddress}>
-              대구 중구 중앙대로77길 36 1층 정남
+              대구 중구 중앙대로77길 36 1층
             </div>
             <div className={styles.locationMeta}>
               <span>🚇 반월당역 15번 출구 도보 2분</span>
@@ -227,8 +228,8 @@ const HomePage = (): React.ReactElement => {
         <div className={styles.faqItem}>
           <p className={styles.faqQuestion}>Q. 장소는 어디인가요?</p>
           <p className={styles.faqAnswer}>
-            A. 서울 시내 분위기 좋은 바/라운지에서 진행해요. 매칭 확정 시 자세한
-            위치를 안내드립니다.
+            A. 대구 반월당에 위치한 &apos;정남&apos;에서 진행해요. 분위기 좋은
+            술집에서 편하게 대화 나눠보세요.
           </p>
         </div>
         <div className={styles.faqItem}>

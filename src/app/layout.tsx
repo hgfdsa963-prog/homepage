@@ -15,11 +15,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "정담 서울 | JEONGDAM SEOUL",
   description:
-    "잔을 기울이며 나누는 진솔한 대화, 대구에서 만나는 특별한 인연. 정담 서울 소개팅",
-  keywords: ["정담서울", "소개팅", "대구소개팅", "미팅", "만남"],
+    "잔을 기울이며 나누는 진솔한 대화, 대구 정남에서 만나는 특별한 인연",
+  keywords: ["정담서울", "정남", "소개팅", "대구소개팅", "반월당", "미팅"],
   openGraph: {
     title: "정담 서울 | JEONGDAM SEOUL",
-    description: "잔을 기울이며 나누는 진솔한 대화, 특별한 인연",
+    description: "잔을 기울이며 나누는 진솔한 대화, 대구 정남에서 특별한 인연",
     type: "website",
   },
 };

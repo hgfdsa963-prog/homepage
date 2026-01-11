@@ -321,10 +321,16 @@
 }
 
 .locationName {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--primary);
-  margin-bottom: 8px;
+  margin-bottom: 4px;
+}
+
+.locationDesc {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
 }
 
 .locationAddress {
@@ -542,7 +548,11 @@
   }
 
   .locationName {
-    font-size: 16px;
+    font-size: 18px;
+  }
+
+  .locationDesc {
+    font-size: 12px;
   }
 
   .locationAddress {
