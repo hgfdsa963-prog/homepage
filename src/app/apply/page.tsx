@@ -32,6 +32,21 @@ const INITIAL_FORM: FormState = {
   website: "",
 };
 
+const PHONE_REGEX = /^010-\d{4}-\d{4}$/;
+
+/** 전화번호 포맷팅 (000-0000-0000) */
+const formatPhoneNumber = (value: string): string => {
+  const numbers = value.replace(/\D/g, "").slice(0, 11);
+
+  if (numbers.length <= 3) {
+    return numbers;
+  }
+  if (numbers.length <= 7) {
+    return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
+  }
+  return `${numbers.slice(0, 3)}-${numbers.slice(3, 7)}-${numbers.slice(7)}`;
+};
+
 const ApplyPage = (): React.ReactElement => {
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">(
@@ -39,15 +54,25 @@ const ApplyPage = (): React.ReactElement => {
   );
   const [message, setMessage] = useState("");
 
+  const isPhoneValid = useMemo(
+    () => PHONE_REGEX.test(form.phone),
+    [form.phone]
+  );
+
   const isSubmitEnabled = useMemo(
     () =>
       form.name.trim() &&
       form.age.trim() &&
-      form.phone.trim() &&
+      isPhoneValid &&
       form.agreePrivacy &&
       status !== "loading",
-    [form, status]
+    [form, isPhoneValid, status]
   );
+
+  const handlePhoneChange = useCallback((value: string): void => {
+    const formatted = formatPhoneNumber(value);
+    setForm((prev) => ({ ...prev, phone: formatted }));
+  }, []);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent): Promise<void> => {
@@ -163,11 +188,17 @@ const ApplyPage = (): React.ReactElement => {
             </label>
             <input
               value={form.phone}
-              onChange={(e) => updateField("phone", e.target.value)}
+              onChange={(e) => handlePhoneChange(e.target.value)}
               className={styles.input}
-              placeholder="010-1234-5678"
+              placeholder="010-0000-0000"
               type="tel"
+              maxLength={13}
             />
+            {form.phone && !isPhoneValid && (
+              <p className={styles.fieldHint}>
+                010-0000-0000 형식으로 입력해주세요
+              </p>
+            )}
           </div>
 
           <div className={styles.divider}>선택 사항</div>
