@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import styles from "@/styles/apply.module.css";
 
@@ -16,6 +16,16 @@ type FormState = {
   note: string;
   agreePrivacy: boolean;
   website: string;
+};
+
+type DateAvailability = {
+  date: string;
+  male: number;
+  female: number;
+  maxMale: number;
+  maxFemale: number;
+  isMaleClosed: boolean;
+  isFemaleClosed: boolean;
 };
 
 const INITIAL_FORM: FormState = {
@@ -54,10 +64,23 @@ const ApplyPage = (): React.ReactElement => {
   );
   const [message, setMessage] = useState("");
 
+  // 날짜별 마감 정보
+  const [dateAvailability, setDateAvailability] =
+    useState<DateAvailability | null>(null);
+  const [isCheckingDate, setIsCheckingDate] = useState(false);
+
   const isPhoneValid = useMemo(
     () => PHONE_REGEX.test(form.phone),
     [form.phone]
   );
+
+  // 현재 성별에 대해 선택한 날짜가 마감인지 확인
+  const isDateClosedForGender = useMemo(() => {
+    if (!dateAvailability || !form.desiredDate) return false;
+    if (form.gender === "남") return dateAvailability.isMaleClosed;
+    if (form.gender === "여") return dateAvailability.isFemaleClosed;
+    return false;
+  }, [dateAvailability, form.desiredDate, form.gender]);
 
   const isSubmitEnabled = useMemo(
     () =>
@@ -65,9 +88,59 @@ const ApplyPage = (): React.ReactElement => {
       form.age.trim() &&
       isPhoneValid &&
       form.agreePrivacy &&
+      !isDateClosedForGender &&
       status !== "loading",
-    [form, isPhoneValid, status]
+    [form, isPhoneValid, isDateClosedForGender, status]
   );
+
+  // 날짜 선택 시 마감 여부 확인
+  const checkDateAvailability = useCallback(
+    async (date: string): Promise<void> => {
+      if (!date) {
+        setDateAvailability(null);
+        return;
+      }
+
+      setIsCheckingDate(true);
+      try {
+        const res = await fetch(`/api/availability?date=${date}`);
+        if (res.ok) {
+          const json = await res.json();
+          setDateAvailability({
+            date,
+            male: json.male ?? 0,
+            female: json.female ?? 0,
+            maxMale: json.maxMale ?? 4,
+            maxFemale: json.maxFemale ?? 4,
+            isMaleClosed: json.isMaleClosed ?? false,
+            isFemaleClosed: json.isFemaleClosed ?? false,
+          });
+        }
+      } catch {
+        console.error("Failed to check date availability");
+      } finally {
+        setIsCheckingDate(false);
+      }
+    },
+    []
+  );
+
+  // 날짜 변경 시 마감 여부 확인
+  const handleDateChange = useCallback(
+    (date: string): void => {
+      setForm((prev) => ({ ...prev, desiredDate: date }));
+      checkDateAvailability(date);
+    },
+    [checkDateAvailability]
+  );
+
+  // 성별 변경 시 마감 상태 다시 체크
+  useEffect(() => {
+    if (form.desiredDate && dateAvailability) {
+      // 이미 불러온 데이터가 있으면 다시 API 호출 불필요
+      // isDateClosedForGender가 자동으로 재계산됨
+    }
+  }, [form.gender, form.desiredDate, dateAvailability]);
 
   const handlePhoneChange = useCallback((value: string): void => {
     const formatted = formatPhoneNumber(value);
@@ -77,6 +150,12 @@ const ApplyPage = (): React.ReactElement => {
   const handleSubmit = useCallback(
     async (e: React.FormEvent): Promise<void> => {
       e.preventDefault();
+
+      if (isDateClosedForGender) {
+        setMessage("선택하신 날짜는 해당 성별이 마감되었습니다.");
+        return;
+      }
+
       setStatus("loading");
       setMessage("");
 
@@ -95,12 +174,13 @@ const ApplyPage = (): React.ReactElement => {
         setStatus("done");
         setMessage("신청 접수 완료! 확인 후 연락드릴게요 💕");
         setForm(INITIAL_FORM);
+        setDateAvailability(null);
       } catch {
         setStatus("error");
         setMessage("네트워크 오류가 발생했어요. 다시 시도해주세요.");
       }
     },
-    [form]
+    [form, isDateClosedForGender]
   );
 
   const updateField = useCallback(
@@ -109,6 +189,24 @@ const ApplyPage = (): React.ReactElement => {
     },
     []
   );
+
+  // 마감 상태 메시지 생성
+  const getClosedMessage = (): string | null => {
+    if (!dateAvailability || !form.desiredDate) return null;
+
+    const messages: string[] = [];
+    if (dateAvailability.isMaleClosed) {
+      messages.push("남성 마감");
+    }
+    if (dateAvailability.isFemaleClosed) {
+      messages.push("여성 마감");
+    }
+
+    if (messages.length === 0) return null;
+    return messages.join(" / ");
+  };
+
+  const closedMessage = getClosedMessage();
 
   return (
     <main className={styles.container}>
@@ -209,9 +307,43 @@ const ApplyPage = (): React.ReactElement => {
             <input
               type="date"
               value={form.desiredDate}
-              onChange={(e) => updateField("desiredDate", e.target.value)}
-              className={styles.input}
+              onChange={(e) => handleDateChange(e.target.value)}
+              className={`${styles.input} ${
+                isDateClosedForGender ? styles.inputError : ""
+              }`}
+              min={new Date().toISOString().split("T")[0]}
             />
+            {isCheckingDate && (
+              <p className={styles.fieldHintInfo}>확인 중...</p>
+            )}
+            {closedMessage && !isCheckingDate && (
+              <p
+                className={`${styles.dateStatus} ${
+                  isDateClosedForGender
+                    ? styles.dateStatusClosed
+                    : styles.dateStatusInfo
+                }`}
+              >
+                📅 {form.desiredDate} : {closedMessage}
+                {isDateClosedForGender && (
+                  <span className={styles.dateClosedWarning}>
+                    <br />
+                    ⚠️ 선택하신 성별({form.gender})은 해당 날짜가
+                    마감되었습니다. 다른 날짜를 선택해주세요.
+                  </span>
+                )}
+              </p>
+            )}
+            {form.desiredDate &&
+              !closedMessage &&
+              !isCheckingDate &&
+              dateAvailability && (
+                <p className={styles.dateStatusAvailable}>
+                  ✅ 신청 가능 (남 {dateAvailability.male}/
+                  {dateAvailability.maxMale}, 여 {dateAvailability.female}/
+                  {dateAvailability.maxFemale})
+                </p>
+              )}
           </div>
 
           {/* Kakao ID */}

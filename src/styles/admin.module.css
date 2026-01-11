@@ -567,3 +567,161 @@
     gap: 4px;
   }
 }
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid var(--border-light);
+  padding-bottom: 0;
+}
+
+.tab {
+  padding: 12px 20px;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition-normal);
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+}
+
+.tab:hover {
+  color: var(--primary);
+}
+
+.tabActive {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+/* Settings Section */
+.settingsSection {
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  box-shadow: var(--shadow-md);
+}
+
+.settingsTitle {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+}
+
+.settingsDesc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0 0 24px 0;
+}
+
+.settingsForm {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  padding: 20px;
+  background: var(--background-alt);
+  border-radius: var(--radius-md);
+  margin-bottom: 24px;
+}
+
+.settingsInput {
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border);
+  font-size: 14px;
+  background: var(--surface);
+}
+
+.settingsInput:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.settingsInputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.settingsInputGroup label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.settingsNumberInput {
+  width: 80px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border);
+  font-size: 14px;
+  text-align: center;
+  background: var(--surface);
+}
+
+.settingsNumberInput:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.settingsSaveButton {
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--gradient-primary);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-normal);
+}
+
+.settingsSaveButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.settingsSaveButton:disabled {
+  background: var(--border);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.settingsList {
+  margin-top: 16px;
+}
+
+@media (max-width: 640px) {
+  .tabs {
+    flex-direction: column;
+  }
+
+  .tab {
+    border-bottom: none;
+    border-left: 3px solid transparent;
+    margin-bottom: 0;
+    margin-left: -2px;
+  }
+
+  .tabActive {
+    border-left-color: var(--primary);
+  }
+
+  .settingsForm {
+    flex-direction: column;
+  }
+
+  .settingsInputGroup {
+    width: 100%;
+  }
+
+  .settingsNumberInput {
+    width: 100%;
+  }
+}

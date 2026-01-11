@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { checkDateAvailability } from "@/lib/checkAvailability";
 
 const Schema = z.object({
   name: z.string().min(1).max(50),
@@ -45,6 +46,25 @@ export const POST = async (req: Request): Promise<NextResponse> => {
 
     const desiredDate = data.desiredDate?.trim() || null;
     const ageNumber = parseInt(data.age, 10) || null;
+
+    // 서버단 마감 검증 (희망 날짜가 있고, 성별이 남/여인 경우)
+    if (desiredDate && ["남", "여"].includes(data.gender)) {
+      const availability = await checkDateAvailability({
+        date: desiredDate,
+        gender: data.gender as "남" | "여",
+      });
+
+      if (!availability.isAvailable) {
+        return NextResponse.json(
+          {
+            ok: false,
+            message: availability.message ?? "해당 날짜는 마감되었습니다.",
+            isClosed: true,
+          },
+          { status: 400 }
+        );
+      }
+    }
 
     const { error } = await supabaseAdmin.from("applications").insert({
       name: data.name,
